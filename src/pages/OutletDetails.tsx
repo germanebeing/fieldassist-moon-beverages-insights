@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +40,14 @@ const OutletDetails = () => {
     { name: 'Premium SKU Compliance', value: 85.4, color: '#fecaca' }
   ];
 
+  const kpiPerformanceData = [
+    { kpi: 'Share of Shelf', current: 78.3, target: 85.0 },
+    { kpi: 'SKU Count', current: 85.2, target: 90.0 },
+    { kpi: 'Planogram Compliance', current: 94.2, target: 95.0 },
+    { kpi: 'Must Sell Compliance', current: 89.7, target: 95.0 },
+    { kpi: 'Premium SKU Compliance', current: 85.4, target: 88.0 }
+  ];
+
   const assetScores = [
     { asset: 'Fridge Display', score: 92.3, kpis: { shareOfShelf: 85.4, skuCount: 94.2, planogram: 96.1 }},
     { asset: 'Rack Display', score: 87.8, kpis: { shareOfShelf: 82.1, skuCount: 89.7, planogram: 91.4 }},
@@ -47,11 +56,11 @@ const OutletDetails = () => {
   ];
 
   const kpiWeights = [
-    { kpi: 'Share of Shelf', weight: 25, description: 'Percentage of shelf space occupied' },
-    { kpi: 'SKU Count', weight: 20, description: 'Number of unique SKUs available' },
-    { kpi: 'Planogram Compliance', weight: 25, description: 'Adherence to planned layout' },
-    { kpi: 'Must Sell Compliance', weight: 15, description: 'Availability of must-sell items' },
-    { kpi: 'Premium SKU Compliance', weight: 15, description: 'Premium product positioning' }
+    { kpi: 'Share of Shelf', weight: 25, description: 'Percentage of shelf space occupied by brand products' },
+    { kpi: 'SKU Count', weight: 20, description: 'Number of unique SKUs available at the outlet' },
+    { kpi: 'Planogram Compliance', weight: 25, description: 'Adherence to planned product layout and positioning' },
+    { kpi: 'Must Sell Compliance', weight: 15, description: 'Availability of must-sell items as per company policy' },
+    { kpi: 'Premium SKU Compliance', weight: 15, description: 'Premium product positioning and availability' }
   ];
 
   const getKPITrendData = (kpiName: string) => {
@@ -118,58 +127,84 @@ const OutletDetails = () => {
               <span className="text-gray-600">/ {outletName} Details</span>
             </div>
 
-            {/* Layout inspired by the reference image */}
+            {/* Main Layout */}
             <div className="grid grid-cols-12 gap-6">
-              {/* Left side - KPI Cards */}
+              {/* Left Column - KPI Cards */}
               <div className="col-span-12 lg:col-span-4 space-y-4">
                 {/* Overall Score Card */}
-                <Card className="border-gray-200 shadow-md">
-                  <CardHeader className="bg-gray-50 text-center">
-                    <CardTitle className="text-gray-900">Overall Outlet Score</CardTitle>
+                <Card className="border-gray-200 shadow-lg">
+                  <CardHeader className="bg-gradient-to-r from-red-50 to-red-100 text-center">
+                    <CardTitle className="text-gray-900 text-lg">Overall Outlet Score</CardTitle>
                   </CardHeader>
                   <CardContent className="bg-white text-center p-6">
-                    <div className="text-4xl font-bold text-red-600 mb-2">92.5%</div>
-                    <p className="text-sm text-gray-600">Two liner explainer statement about how the KPI works and functions</p>
-                    <div className="mt-4">
-                      <ResponsiveContainer width="100%" height={120}>
-                        <PieChart>
+                    <div className="text-5xl font-bold text-red-600 mb-3">92.5%</div>
+                    <p className="text-sm text-gray-600 mb-4">Comprehensive performance score based on weighted KPI metrics</p>
+                    <div className="relative w-32 h-32 mx-auto mb-4">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsPieChart>
                           <Pie
                             data={[
                               { name: 'Score', value: 92.5, fill: '#dc2626' },
+                              { name: 'Remaining', value: 7.5, fill: '#f3f4f6' }
                             ]}
                             cx="50%"
                             cy="50%"
-                            innerRadius={30}
-                            outerRadius={50}
+                            innerRadius={35}
+                            outerRadius={55}
                             dataKey="value"
-                          >
-                          </Pie>
-                        </PieChart>
+                            startAngle={90}
+                            endAngle={450}
+                          />
+                        </RechartsPieChart>
                       </ResponsiveContainer>
                     </div>
-                    <Button variant="outline" size="sm" className="mt-2">DETAILS</Button>
+                    <Button variant="outline" size="sm" className="border-red-300 text-red-700 hover:bg-red-50">
+                      View Details
+                    </Button>
                   </CardContent>
                 </Card>
 
                 {/* Individual KPI Cards */}
-                {kpiBreakdown.slice(0, 3).map((kpi, index) => (
+                {kpiBreakdown.map((kpi, index) => (
                   <Card key={index} className="border-gray-200 shadow-md">
-                    <CardHeader className="bg-gray-50">
-                      <CardTitle className="text-gray-900 text-sm flex items-center">
-                        <input type="checkbox" className="mr-2" defaultChecked />
+                    <CardHeader className="bg-gray-50 pb-3">
+                      <CardTitle className="text-gray-900 text-sm font-medium">
                         {kpi.name}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="bg-white p-4">
-                      <div className="text-lg font-bold text-gray-900 mb-1">{kpi.value}%</div>
-                      <p className="text-xs text-gray-600 mb-3">Two liner explainer statement about how the KPI works and functions</p>
-                      <Button variant="outline" size="sm" className="w-full">DETAILS</Button>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-2xl font-bold text-gray-900">{kpi.value}%</div>
+                        <div className="w-8 h-8">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <RechartsPieChart>
+                              <Pie
+                                data={[
+                                  { value: kpi.value, fill: kpi.color },
+                                  { value: 100 - kpi.value, fill: '#f3f4f6' }
+                                ]}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={8}
+                                outerRadius={16}
+                                dataKey="value"
+                              />
+                            </RechartsPieChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-3">
+                        {kpiWeights.find(w => w.kpi === kpi.name)?.description}
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full text-xs">
+                        View Trends
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
               </div>
 
-              {/* Right side - Main chart and KPI weights */}
+              {/* Right Column - Charts and Analysis */}
               <div className="col-span-12 lg:col-span-8 space-y-6">
                 {/* Filters */}
                 <Card className="border-gray-200 shadow-md">
@@ -179,22 +214,22 @@ const OutletDetails = () => {
                   <CardContent className="bg-white">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="text-sm font-medium mb-2 block">Geographic Hierarchy</label>
+                        <label className="text-sm font-medium mb-2 block text-gray-700">Geographic Level</label>
                         <Select value={selectedRegion} onValueChange={setSelectedRegion}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="current">Current Location</SelectItem>
-                            <SelectItem value="beat">Beat Level</SelectItem>
-                            <SelectItem value="region">Region Level</SelectItem>
-                            <SelectItem value="national">National Level</SelectItem>
+                            <SelectItem value="current">Current Outlet</SelectItem>
+                            <SelectItem value="beat">Beat Comparison</SelectItem>
+                            <SelectItem value="region">Regional Average</SelectItem>
+                            <SelectItem value="national">National Benchmark</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       
                       <div>
-                        <label className="text-sm font-medium mb-2 block">Time Period</label>
+                        <label className="text-sm font-medium mb-2 block text-gray-700">Time Period</label>
                         <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
                           <SelectTrigger>
                             <SelectValue />
@@ -209,16 +244,17 @@ const OutletDetails = () => {
                       </div>
 
                       <div>
-                        <label className="text-sm font-medium mb-2 block">In-Store Display Filter</label>
+                        <label className="text-sm font-medium mb-2 block text-gray-700">Display Assets</label>
                         <Select>
                           <SelectTrigger>
-                            <SelectValue placeholder="All Displays" />
+                            <SelectValue placeholder="All Assets" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Displays</SelectItem>
-                            <SelectItem value="racks">Racks Only</SelectItem>
-                            <SelectItem value="fridges">Fridges Only</SelectItem>
-                            <SelectItem value="counters">Counters Only</SelectItem>
+                            <SelectItem value="all">All Assets</SelectItem>
+                            <SelectItem value="fridges">Fridge Displays</SelectItem>
+                            <SelectItem value="racks">Rack Displays</SelectItem>
+                            <SelectItem value="counters">Counter Displays</SelectItem>
+                            <SelectItem value="endcaps">End Caps</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -226,18 +262,27 @@ const OutletDetails = () => {
                   </CardContent>
                 </Card>
 
-                {/* Main Trend Chart */}
+                {/* KPI Performance Breakdown Chart */}
                 <Card className="border-gray-200 shadow-md">
                   <CardHeader className="bg-gray-50">
-                    <CardTitle className="text-gray-900">Outlet Score Trend</CardTitle>
+                    <CardTitle className="text-gray-900 flex items-center">
+                      <BarChart3 className="w-5 h-5 mr-2 text-red-600" />
+                      KPI Performance Breakdown
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="bg-white">
-                    <p className="text-sm text-gray-600 mb-4">Two liner explainer statement about how the KPI works and functions</p>
+                    <p className="text-sm text-gray-600 mb-4">Current performance vs target for each KPI metric</p>
                     <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={outletScoreTrend}>
+                      <BarChart data={kpiPerformanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                        <XAxis dataKey="date" tick={{ fill: '#374151' }} />
-                        <YAxis tick={{ fill: '#374151' }} />
+                        <XAxis 
+                          dataKey="kpi" 
+                          tick={{ fill: '#374151', fontSize: 12 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={80}
+                        />
+                        <YAxis tick={{ fill: '#374151' }} domain={[0, 100]} />
                         <Tooltip 
                           contentStyle={{ 
                             backgroundColor: '#fef2f2',
@@ -245,82 +290,92 @@ const OutletDetails = () => {
                             borderRadius: '8px'
                           }}
                         />
-                        <Line type="monotone" dataKey="score" stroke="#dc2626" strokeWidth={2} />
-                      </LineChart>
+                        <Bar dataKey="current" fill="#dc2626" name="Current" />
+                        <Bar dataKey="target" fill="#fca5a5" name="Target" />
+                      </BarChart>
                     </ResponsiveContainer>
-                    
-                    {/* KPI Weights Table */}
-                    <div className="mt-6">
-                      <h4 className="font-medium text-gray-900 mb-3">KPI Weights</h4>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="border-b">
-                              <th className="text-left p-2">KPI</th>
-                              <th className="text-left p-2">Weight</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {kpiWeights.map((kpi, index) => (
-                              <tr key={index} className="border-b">
-                                <td className="p-2">{kpi.kpi}</td>
-                                <td className="p-2">{kpi.weight}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                  </CardContent>
+                </Card>
+
+                {/* KPI Weight Distribution */}
+                <Card className="border-gray-200 shadow-md">
+                  <CardHeader className="bg-gray-50">
+                    <CardTitle className="text-gray-900 flex items-center">
+                      <PieChart className="w-5 h-5 mr-2 text-red-600" />
+                      KPI Weight Distribution
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="bg-white">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <RechartsPieChart>
+                            <Pie
+                              data={kpiWeights.map((item, index) => ({
+                                name: item.kpi,
+                                value: item.weight,
+                                fill: ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca'][index]
+                              }))}
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={80}
+                              dataKey="value"
+                              label={({ name, value }) => `${name}: ${value}%`}
+                            />
+                            <Tooltip />
+                          </RechartsPieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-gray-900 mb-3">Weight Breakdown</h4>
+                        {kpiWeights.map((kpi, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div className="flex items-center">
+                              <div 
+                                className="w-3 h-3 rounded-full mr-2"
+                                style={{ backgroundColor: ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca'][index] }}
+                              />
+                              <span className="text-sm font-medium">{kpi.kpi}</span>
+                            </div>
+                            <span className="text-sm font-bold">{kpi.weight}%</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Bottom section with pie chart */}
+                {/* Outlet Score Trend */}
                 <Card className="border-gray-200 shadow-md">
                   <CardHeader className="bg-gray-50">
-                    <CardTitle className="text-gray-900">Share of Shelf - Value</CardTitle>
+                    <CardTitle className="text-gray-900 flex items-center">
+                      <TrendingUp className="w-5 h-5 mr-2 text-red-600" />
+                      Outlet Score Trend
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="bg-white">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div>
-                        <ResponsiveContainer width="100%" height={200}>
-                          <LineChart data={getKPITrendData('share-of-shelf')}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                            <XAxis dataKey="date" tick={{ fill: '#374151' }} />
-                            <YAxis tick={{ fill: '#374151' }} />
-                            <Tooltip 
-                              contentStyle={{ 
-                                backgroundColor: '#fef2f2',
-                                border: '1px solid #dc2626',
-                                borderRadius: '8px'
-                              }}
-                            />
-                            <Line type="monotone" dataKey="value" stroke="#dc2626" strokeWidth={2} />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                      <div className="flex flex-col justify-center">
-                        <div className="text-center mb-4">
-                          <div className="text-3xl font-bold text-gray-900">74%</div>
-                          <p className="text-sm text-gray-600">More SOS than 70% in this beat/region</p>
-                        </div>
-                        <ResponsiveContainer width="100%" height={120}>
-                          <PieChart>
-                            <Pie
-                              data={[
-                                { name: 'Current', value: 74, fill: '#dc2626' },
-                                { name: 'Remaining', value: 26, fill: '#f3f4f6' }
-                              ]}
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={30}
-                              outerRadius={50}
-                              dataKey="value"
-                            >
-                            </Pie>
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-600 mb-4">Performance trend over the selected time period</p>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <LineChart data={outletScoreTrend}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                        <XAxis dataKey="date" tick={{ fill: '#374151', fontSize: 12 }} />
+                        <YAxis tick={{ fill: '#374151' }} domain={[75, 95]} />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#fef2f2',
+                            border: '1px solid #dc2626',
+                            borderRadius: '8px'
+                          }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="score" 
+                          stroke="#dc2626" 
+                          strokeWidth={3}
+                          dot={{ fill: '#dc2626', strokeWidth: 2, r: 4 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </CardContent>
                 </Card>
               </div>

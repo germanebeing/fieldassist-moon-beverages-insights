@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,10 +31,10 @@ const OutletDetails = () => {
 
   const kpiBreakdown = [
     { name: 'Share of Shelf', value: 78.3, color: '#3b82f6' },
-    { name: 'SKU Count', value: 85.2, color: '#10b981' },
-    { name: 'Planogram Compliance', value: 94.2, color: '#f59e0b' },
-    { name: 'Must Sell Compliance', value: 89.7, color: '#ef4444' },
-    { name: 'Premium SKU Compliance', value: 85.4, color: '#8b5cf6' }
+    { name: 'SKU Count', value: 85.2, color: '#60a5fa' },
+    { name: 'Planogram Compliance', value: 94.2, color: '#93c5fd' },
+    { name: 'Must Sell Compliance', value: 89.7, color: '#1e40af' },
+    { name: 'Premium SKU Compliance', value: 85.4, color: '#dbeafe' }
   ];
 
   const assetScores = [
@@ -54,7 +53,6 @@ const OutletDetails = () => {
   ];
 
   const getKPITrendData = (kpiName: string) => {
-    // Mock trend data for different KPIs
     const baseTrend = [
       { date: '2024-05-01', value: 75 + Math.random() * 15 },
       { date: '2024-05-08', value: 77 + Math.random() * 15 },
@@ -67,19 +65,27 @@ const OutletDetails = () => {
     return baseTrend.map(item => ({ ...item, value: Math.round(item.value * 10) / 10 }));
   };
 
+  const assetChartData = assetScores.map(asset => ({
+    name: asset.asset.split(' ')[0],
+    score: asset.score,
+    shareOfShelf: asset.kpis.shareOfShelf,
+    skuCount: asset.kpis.skuCount,
+    planogram: asset.kpis.planogram
+  }));
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       {/* Header */}
-      <div className="border-b bg-card">
+      <div className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-primary">FieldAssist</h1>
-              <Badge variant="secondary" className="text-sm">Outlet Analytics</Badge>
+              <h1 className="text-2xl font-bold text-blue-900">FieldAssist</h1>
+              <Badge variant="secondary" className="text-sm bg-blue-100 text-blue-800">Outlet Analytics</Badge>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Client</p>
-              <p className="text-lg font-semibold text-primary">Moon Beverages</p>
+              <p className="text-sm text-blue-600">Client</p>
+              <p className="text-lg font-semibold text-blue-900">Moon Beverages</p>
             </div>
           </div>
         </div>
@@ -92,20 +98,20 @@ const OutletDetails = () => {
             variant="ghost" 
             size="sm" 
             onClick={() => navigate(-1)}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 text-blue-700 hover:text-blue-900 hover:bg-blue-100"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Outlets</span>
           </Button>
-          <span className="text-muted-foreground">/ {outletName} Details</span>
+          <span className="text-blue-600">/ {outletName} Details</span>
         </div>
 
         {/* Filters */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Analysis Filters</CardTitle>
+        <Card className="mb-8 border-blue-200 shadow-md">
+          <CardHeader className="bg-blue-50">
+            <CardTitle className="text-blue-900">Analysis Filters</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="bg-white">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Geographic Hierarchy</label>
@@ -157,114 +163,112 @@ const OutletDetails = () => {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="kpi-trends">KPI Trends</TabsTrigger>
-            <TabsTrigger value="asset-analysis">Asset Analysis</TabsTrigger>
-            <TabsTrigger value="weights">KPI Weights</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-blue-100">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Overview</TabsTrigger>
+            <TabsTrigger value="kpi-trends" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">KPI Trends</TabsTrigger>
+            <TabsTrigger value="asset-analysis" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Asset Analysis</TabsTrigger>
+            <TabsTrigger value="weights" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">KPI Weights</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
             {/* KPI Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Overall Outlet Score</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <Card className="border-blue-200 shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-blue-50">
+                  <CardTitle className="text-sm font-medium text-blue-800">Overall Outlet Score</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
                 </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">92.5%</div>
-                  <p className="text-xs text-muted-foreground">+4.2% from last month</p>
+                <CardContent className="bg-white">
+                  <div className="text-2xl font-bold text-blue-900">92.5%</div>
+                  <p className="text-xs text-blue-600">+4.2% from last month</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Average Asset Score</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              <Card className="border-blue-200 shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-blue-50">
+                  <CardTitle className="text-sm font-medium text-blue-800">Average Asset Score</CardTitle>
+                  <BarChart3 className="h-4 w-4 text-blue-600" />
                 </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">88.1%</div>
-                  <p className="text-xs text-muted-foreground">Across 4 assets</p>
+                <CardContent className="bg-white">
+                  <div className="text-2xl font-bold text-blue-900">88.1%</div>
+                  <p className="text-xs text-blue-600">Across 4 assets</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Compliance Rate</CardTitle>
-                  <PieChart className="h-4 w-4 text-muted-foreground" />
+              <Card className="border-blue-200 shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-blue-50">
+                  <CardTitle className="text-sm font-medium text-blue-800">Compliance Rate</CardTitle>
+                  <PieChart className="h-4 w-4 text-blue-600" />
                 </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-purple-600">91.1%</div>
-                  <p className="text-xs text-muted-foreground">Above target (85%)</p>
+                <CardContent className="bg-white">
+                  <div className="text-2xl font-bold text-blue-900">91.1%</div>
+                  <p className="text-xs text-blue-600">Above target (85%)</p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Outlet Score Trend */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Outlet Score Trend</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={outletScoreTrend}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Outlet Score Trend */}
+              <Card className="border-blue-200 shadow-md">
+                <CardHeader className="bg-blue-50">
+                  <CardTitle className="text-blue-900">Outlet Score Trend</CardTitle>
+                </CardHeader>
+                <CardContent className="bg-white">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={outletScoreTrend}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                      <XAxis dataKey="date" tick={{ fill: '#1e40af' }} />
+                      <YAxis tick={{ fill: '#1e40af' }} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#eff6ff',
+                          border: '1px solid #3b82f6',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Line type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
 
-            {/* KPI Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle>KPI Performance Breakdown</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <ResponsiveContainer width="100%" height={250}>
+              {/* KPI Breakdown */}
+              <Card className="border-blue-200 shadow-md">
+                <CardHeader className="bg-blue-50">
+                  <CardTitle className="text-blue-900">KPI Performance Breakdown</CardTitle>
+                </CardHeader>
+                <CardContent className="bg-white">
+                  <ResponsiveContainer width="100%" height={300}>
                     <RechartsPieChart>
                       <RechartsPieChart data={kpiBreakdown}>
                         {kpiBreakdown.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </RechartsPieChart>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#eff6ff',
+                          border: '1px solid #3b82f6',
+                          borderRadius: '8px'
+                        }}
+                      />
                     </RechartsPieChart>
                   </ResponsiveContainer>
-                  
-                  <div className="space-y-4">
-                    {kpiBreakdown.map((kpi, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                        <div className="flex items-center space-x-3">
-                          <div 
-                            className="w-4 h-4 rounded-full" 
-                            style={{ backgroundColor: kpi.color }}
-                          />
-                          <span className="font-medium">{kpi.name}</span>
-                        </div>
-                        <Badge variant="outline">{kpi.value}%</Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="kpi-trends" className="space-y-6">
             {/* KPI Selector */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Select KPI for Detailed Trend Analysis</CardTitle>
+            <Card className="border-blue-200 shadow-md">
+              <CardHeader className="bg-blue-50">
+                <CardTitle className="text-blue-900">Select KPI for Detailed Trend Analysis</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-white">
                 <Select value={selectedKPI} onValueChange={setSelectedKPI}>
-                  <SelectTrigger className="w-full md:w-[300px]">
+                  <SelectTrigger className="w-full md:w-[300px] border-blue-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -280,17 +284,23 @@ const OutletDetails = () => {
             </Card>
 
             {/* Historical Trend */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Historical Trend - {selectedKPI.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
+            <Card className="border-blue-200 shadow-md">
+              <CardHeader className="bg-blue-50">
+                <CardTitle className="text-blue-900">Historical Trend - {selectedKPI.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-white">
                 <ResponsiveContainer width="100%" height={400}>
                   <AreaChart data={getKPITrendData(selectedKPI)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                    <XAxis dataKey="date" tick={{ fill: '#1e40af' }} />
+                    <YAxis tick={{ fill: '#1e40af' }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#eff6ff',
+                        border: '1px solid #3b82f6',
+                        borderRadius: '8px'
+                      }}
+                    />
                     <Area type="monotone" dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -299,12 +309,38 @@ const OutletDetails = () => {
           </TabsContent>
 
           <TabsContent value="asset-analysis" className="space-y-6">
-            {/* Asset Scores */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Individual Asset Scores</CardTitle>
+            {/* Asset Performance Chart */}
+            <Card className="border-blue-200 shadow-md">
+              <CardHeader className="bg-blue-50">
+                <CardTitle className="text-blue-900">Asset Performance Comparison</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-white">
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={assetChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                    <XAxis dataKey="name" tick={{ fill: '#1e40af' }} />
+                    <YAxis tick={{ fill: '#1e40af' }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#eff6ff',
+                        border: '1px solid #3b82f6',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar dataKey="score" fill="#3b82f6" name="Asset Score" />
+                    <Bar dataKey="shareOfShelf" fill="#60a5fa" name="Share of Shelf" />
+                    <Bar dataKey="planogram" fill="#93c5fd" name="Planogram" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Asset Scores Details */}
+            <Card className="border-blue-200 shadow-md">
+              <CardHeader className="bg-blue-50">
+                <CardTitle className="text-blue-900">Individual Asset Scores</CardTitle>
+              </CardHeader>
+              <CardContent className="bg-white">
                 <div className="space-y-4">
                   {assetScores.map((asset, index) => (
                     <div key={index} className="p-4 rounded-lg border">
@@ -336,12 +372,36 @@ const OutletDetails = () => {
           </TabsContent>
 
           <TabsContent value="weights" className="space-y-6">
-            {/* KPI Weights Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>KPI Weights Configuration</CardTitle>
+            {/* KPI Weights Chart */}
+            <Card className="border-blue-200 shadow-md">
+              <CardHeader className="bg-blue-50">
+                <CardTitle className="text-blue-900">KPI Weight Distribution</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-white">
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={kpiWeights} layout="horizontal">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                    <XAxis type="number" tick={{ fill: '#1e40af' }} />
+                    <YAxis dataKey="kpi" type="category" tick={{ fill: '#1e40af' }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#eff6ff',
+                        border: '1px solid #3b82f6',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar dataKey="weight" fill="#3b82f6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* KPI Weights Table */}
+            <Card className="border-blue-200 shadow-md">
+              <CardHeader className="bg-blue-50">
+                <CardTitle className="text-blue-900">KPI Weights Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="bg-white">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>

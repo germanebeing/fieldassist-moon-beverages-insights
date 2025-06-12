@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, Store } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 
 interface OutletData {
   id: string;
@@ -34,12 +34,12 @@ const Outlets = () => {
   const userName = searchParams.get('userName');
   const userLevel = searchParams.get('level');
 
-  // Mock outlet data
+  // Mock outlet data with Indian names
   const outletData: OutletData[] = [
     {
       id: '1',
-      name: 'MegaMart Downtown',
-      location: 'Downtown Plaza, City Center',
+      name: 'Reliance Fresh Connaught Place',
+      location: 'Connaught Place, New Delhi',
       outletScore: 92.5,
       shareOfShelf: 78.3,
       skuCount: 156,
@@ -53,8 +53,8 @@ const Outlets = () => {
     },
     {
       id: '2',
-      name: 'SuperStore Mall',
-      location: 'Shopping Mall, Sector 15',
+      name: 'Big Bazaar Janakpuri',
+      location: 'Janakpuri, West Delhi',
       outletScore: 87.2,
       shareOfShelf: 72.8,
       skuCount: 142,
@@ -68,8 +68,8 @@ const Outlets = () => {
     },
     {
       id: '3',
-      name: 'QuickStop Express',
-      location: 'Highway Junction, Exit 12',
+      name: 'Spencer\'s Retail Gurgaon',
+      location: 'Sector 14, Gurgaon',
       outletScore: 76.8,
       shareOfShelf: 65.4,
       skuCount: 98,
@@ -78,8 +78,23 @@ const Outlets = () => {
       premiumSKUCompliance: 71.6,
       assetScore: 75.2,
       lastIRVisit: '2024-06-05',
-      region: 'South',
+      region: 'North',
       beat: 'Beat-B1'
+    },
+    {
+      id: '4',
+      name: 'More Megastore Noida',
+      location: 'Sector 18, Noida',
+      outletScore: 89.1,
+      shareOfShelf: 74.6,
+      skuCount: 134,
+      planogramCompliance: 91.3,
+      mustSellCompliance: 87.8,
+      premiumSKUCompliance: 82.5,
+      assetScore: 86.3,
+      lastIRVisit: '2024-06-09',
+      region: 'North',
+      beat: 'Beat-A1'
     }
   ];
 
@@ -93,19 +108,34 @@ const Outlets = () => {
     return regionMatch && beatMatch;
   });
 
+  // Chart data
+  const outletPerformanceData = filteredOutlets.map(outlet => ({
+    name: outlet.name.split(' ')[0],
+    score: outlet.outletScore,
+    asset: outlet.assetScore,
+    compliance: outlet.planogramCompliance
+  }));
+
+  const regionDistribution = [
+    { name: 'North', value: filteredOutlets.filter(o => o.region === 'North').length, fill: '#3b82f6' },
+    { name: 'South', value: filteredOutlets.filter(o => o.region === 'South').length, fill: '#60a5fa' },
+    { name: 'East', value: filteredOutlets.filter(o => o.region === 'East').length, fill: '#93c5fd' },
+    { name: 'West', value: filteredOutlets.filter(o => o.region === 'West').length, fill: '#dbeafe' }
+  ].filter(item => item.value > 0);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       {/* Header */}
-      <div className="border-b bg-card">
+      <div className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-primary">FieldAssist</h1>
-              <Badge variant="secondary" className="text-sm">Outlet Management</Badge>
+              <h1 className="text-2xl font-bold text-blue-900">FieldAssist</h1>
+              <Badge variant="secondary" className="text-sm bg-blue-100 text-blue-800">Outlet Management</Badge>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Client</p>
-              <p className="text-lg font-semibold text-primary">Moon Beverages</p>
+              <p className="text-sm text-blue-600">Client</p>
+              <p className="text-lg font-semibold text-blue-900">Moon Beverages</p>
             </div>
           </div>
         </div>
@@ -118,23 +148,23 @@ const Outlets = () => {
             variant="ghost" 
             size="sm" 
             onClick={() => navigate('/dashboard')}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 text-blue-700 hover:text-blue-900 hover:bg-blue-100"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Dashboard</span>
           </Button>
-          <span className="text-muted-foreground">/ Outlets under {userName} ({userLevel})</span>
+          <span className="text-blue-600">/ Outlets under {userName} ({userLevel})</span>
         </div>
 
         {/* Filters Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="mb-8 border-blue-200 shadow-md">
+          <CardHeader className="bg-blue-50">
+            <CardTitle className="flex items-center gap-2 text-blue-900">
               <MapPin className="h-5 w-5" />
               Geographic & Date Filters
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="bg-white">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Region</label>
@@ -203,110 +233,165 @@ const Outlets = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="border-blue-200 shadow-md">
+            <CardContent className="p-6 bg-gradient-to-r from-blue-50 to-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Outlets</p>
-                  <p className="text-2xl font-bold text-primary">{filteredOutlets.length}</p>
+                  <p className="text-sm font-medium text-blue-600">Total Outlets</p>
+                  <p className="text-2xl font-bold text-blue-900">{filteredOutlets.length}</p>
                 </div>
                 <Store className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent className="p-6">
+          <Card className="border-blue-200 shadow-md">
+            <CardContent className="p-6 bg-gradient-to-r from-blue-50 to-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Avg Outlet Score</p>
-                  <p className="text-2xl font-bold text-primary">
+                  <p className="text-sm font-medium text-blue-600">Avg Outlet Score</p>
+                  <p className="text-2xl font-bold text-blue-900">
                     {(filteredOutlets.reduce((sum, outlet) => sum + outlet.outletScore, 0) / filteredOutlets.length).toFixed(1)}%
                   </p>
                 </div>
-                <Calendar className="h-8 w-8 text-green-500" />
+                <Calendar className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent className="p-6">
+          <Card className="border-blue-200 shadow-md">
+            <CardContent className="p-6 bg-gradient-to-r from-blue-50 to-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Recent Visits</p>
-                  <p className="text-2xl font-bold text-primary">
+                  <p className="text-sm font-medium text-blue-600">Recent Visits</p>
+                  <p className="text-2xl font-bold text-blue-900">
                     {filteredOutlets.filter(outlet => new Date(outlet.lastIRVisit) > new Date(Date.now() - 7*24*60*60*1000)).length}
                   </p>
                 </div>
-                <MapPin className="h-8 w-8 text-purple-500" />
+                <MapPin className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
         </div>
 
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <Card className="border-blue-200 shadow-md">
+            <CardHeader className="bg-blue-50">
+              <CardTitle className="text-blue-900">Outlet Performance Comparison</CardTitle>
+            </CardHeader>
+            <CardContent className="bg-white">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={outletPerformanceData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                  <XAxis dataKey="name" tick={{ fill: '#1e40af' }} />
+                  <YAxis tick={{ fill: '#1e40af' }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#eff6ff',
+                      border: '1px solid #3b82f6',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Bar dataKey="score" fill="#3b82f6" name="Outlet Score" />
+                  <Bar dataKey="asset" fill="#60a5fa" name="Asset Score" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="border-blue-200 shadow-md">
+            <CardHeader className="bg-blue-50">
+              <CardTitle className="text-blue-900">Regional Distribution</CardTitle>
+            </CardHeader>
+            <CardContent className="bg-white">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={regionDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {regionDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Outlets Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Outlets under {userName} ({userLevel})</CardTitle>
+        <Card className="border-blue-200 shadow-md">
+          <CardHeader className="bg-blue-50">
+            <CardTitle className="text-blue-900">Outlets under {userName} ({userLevel})</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="bg-white">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-4 font-medium">Outlet Name</th>
-                    <th className="text-left p-4 font-medium">Location</th>
-                    <th className="text-left p-4 font-medium">Outlet Score</th>
-                    <th className="text-left p-4 font-medium">Share of Shelf</th>
-                    <th className="text-left p-4 font-medium">SKU Count</th>
-                    <th className="text-left p-4 font-medium">Planogram</th>
-                    <th className="text-left p-4 font-medium">Asset Score</th>
-                    <th className="text-left p-4 font-medium">Last IR Visit</th>
-                    <th className="text-left p-4 font-medium">Region/Beat</th>
+                  <tr className="border-b border-blue-200">
+                    <th className="text-left p-4 font-medium text-blue-900">Outlet Name</th>
+                    <th className="text-left p-4 font-medium text-blue-900">Location</th>
+                    <th className="text-left p-4 font-medium text-blue-900">Outlet Score</th>
+                    <th className="text-left p-4 font-medium text-blue-900">Share of Shelf</th>
+                    <th className="text-left p-4 font-medium text-blue-900">SKU Count</th>
+                    <th className="text-left p-4 font-medium text-blue-900">Planogram</th>
+                    <th className="text-left p-4 font-medium text-blue-900">Asset Score</th>
+                    <th className="text-left p-4 font-medium text-blue-900">Last IR Visit</th>
+                    <th className="text-left p-4 font-medium text-blue-900">Region/Beat</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredOutlets.map((outlet) => (
                     <tr 
                       key={outlet.id} 
-                      className="border-b hover:bg-muted/50 cursor-pointer"
+                      className="border-b border-blue-100 hover:bg-blue-50 cursor-pointer"
                       onClick={() => handleOutletClick(outlet.id, outlet.name)}
                     >
                       <td className="p-4">
                         <div>
-                          <p className="font-medium text-primary hover:underline">{outlet.name}</p>
-                          <p className="text-sm text-muted-foreground">{outlet.location}</p>
+                          <p className="font-medium text-blue-900 hover:underline">{outlet.name}</p>
+                          <p className="text-sm text-blue-600">{outlet.location}</p>
                         </div>
                       </td>
                       <td className="p-4">
-                        <p className="text-sm">{outlet.location}</p>
+                        <p className="text-sm text-blue-800">{outlet.location}</p>
                       </td>
                       <td className="p-4">
                         <div className="flex items-center space-x-2">
-                          <span className="font-medium">{outlet.outletScore}%</span>
-                          <div className="w-16 h-2 bg-muted rounded-full">
+                          <span className="font-medium text-blue-900">{outlet.outletScore}%</span>
+                          <div className="w-16 h-2 bg-blue-100 rounded-full">
                             <div 
-                              className="h-2 bg-green-500 rounded-full" 
+                              className="h-2 bg-blue-500 rounded-full" 
                               style={{width: `${outlet.outletScore}%`}}
                             />
                           </div>
                         </div>
                       </td>
-                      <td className="p-4">{outlet.shareOfShelf}%</td>
-                      <td className="p-4">{outlet.skuCount}</td>
+                      <td className="p-4 text-blue-800">{outlet.shareOfShelf}%</td>
+                      <td className="p-4 text-blue-800">{outlet.skuCount}</td>
                       <td className="p-4">
-                        <Badge variant={outlet.planogramCompliance > 85 ? "default" : "secondary"}>
+                        <Badge variant={outlet.planogramCompliance > 85 ? "default" : "secondary"}
+                               className={outlet.planogramCompliance > 85 ? "bg-blue-600" : "bg-blue-300"}>
                           {outlet.planogramCompliance}%
                         </Badge>
                       </td>
-                      <td className="p-4">{outlet.assetScore}%</td>
+                      <td className="p-4 text-blue-800">{outlet.assetScore}%</td>
                       <td className="p-4">
-                        <Badge variant="outline">{outlet.lastIRVisit}</Badge>
+                        <Badge variant="outline" className="border-blue-300 text-blue-700">{outlet.lastIRVisit}</Badge>
                       </td>
                       <td className="p-4">
                         <div>
-                          <p className="text-sm font-medium">{outlet.region}</p>
-                          <p className="text-xs text-muted-foreground">{outlet.beat}</p>
+                          <p className="text-sm font-medium text-blue-900">{outlet.region}</p>
+                          <p className="text-xs text-blue-600">{outlet.beat}</p>
                         </div>
                       </td>
                     </tr>
